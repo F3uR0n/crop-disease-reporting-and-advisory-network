@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{notification.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h1 class="h3 mb-0"><i class="bi bi-bell text-success me-2"></i><span th:text="#{notification.title}">Notifications</span></h1>
+        <form th:action="@{/notifications/read-all}" method="post" th:unless="${notifications.isEmpty()}">
+            <button type="submit" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-check2-all me-1"></i><span th:text="#{notification.readAll}">Mark all as read</span>
+            </button>
+        </form>
+    </div>
+
+    <div class="card empty-state" th:if="${notifications.isEmpty()}">
+        <i class="bi bi-bell-slash"></i>
+        <span th:text="#{notification.empty}">No notifications.</span>
+    </div>
+
+    <!-- Each notification is a small POST form: opening it marks it read, then goes to the case. -->
+    <form th:each="n : ${notifications}" th:action="@{/notifications/{id}/open(id=${n.id})}" method="post">
+        <button type="submit" class="list-group-item list-group-item-action notification-item d-flex gap-3 align-items-center p-3 mb-2"
+                th:classappend="${n.read} ? 'bg-transparent text-muted' : 'notification-unread'">
+            <span class="notification-icon"><i class="bi bi-file-earmark-medical"></i></span>
+            <span class="flex-grow-1 text-start">
+                <!-- The text is an i18n key + argument, so it shows in the reader's language -->
+                <span th:classappend="${n.read} ? '' : 'fw-semibold'" th:text="#{${n.messageKey}(${n.messageArg})}">message</span>
+                <small class="d-block text-muted" th:text="${#temporals.format(n.createdAt, 'dd MMM yyyy, HH:mm')}">date</small>
+            </span>
+            <i class="bi bi-chevron-right text-muted"></i>
+        </button>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

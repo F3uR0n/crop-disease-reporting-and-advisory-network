@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{case.detail.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" th:with="c=${diseaseCase}">
+    <a th:href="@{${backUrl}}" class="small text-decoration-none">
+        <i class="bi bi-arrow-left me-1"></i><span th:text="#{case.back}">Back</span>
+    </a>
+
+    <div class="page-header d-flex align-items-center gap-3 mt-2 mb-3 flex-wrap">
+        <div class="me-auto">
+            <h1 class="h4 mb-1"><span th:text="#{case.detail.title}">Case</span> #<span th:text="${c.id}">1</span>
+                &middot; <span th:text="${c.crop.name(#locale.language)}">Rice</span></h1>
+            <small class="text-muted"><i class="bi bi-clock me-1"></i><span
+                    th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, HH:mm')}">date</span></small>
+        </div>
+        <span th:replace="~{fragments/layout :: statusBadge(${c.status})}"></span>
+    </div>
+
+    <!-- Progress through the four main stages (Feature 4) -->
+    <div class="case-steps mb-4">
+        <div th:each="s : ${mainStages}" class="step" th:classappend="${c.hasReached(s)} ? 'done'">
+            <i th:replace="~{fragments/layout :: statusIcon(${s})}"></i>
+            <span th:text="#{'status.' + ${s}}">stage</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Case information -->
+        <div class="col-12 col-lg-7">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3"><i class="bi bi-info-circle text-success me-2"></i><span th:text="#{case.detail.info}">Details</span></h2>
+                    <dl class="row mb-0">
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.farmer}">Farmer</dt>
+                        <dd class="col-7" th:text="${c.farmer.fullName}">Rahim</dd>
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.field.crop}">Crop</dt>
+                        <dd class="col-7" th:text="${c.crop.name(#locale.language)}">Rice</dd>
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.field.growthStage}">Stage</dt>
+                        <dd class="col-7" th:text="#{'growthStage.' + ${c.growthStage}}">stage</dd>
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.field.location}">Location</dt>
+                        <dd class="col-7">
+                            <a target="_blank" rel="noopener" class="text-decoration-none"
+                               th:href="|https://www.openstreetmap.org/?mlat=${c.latitude}&mlon=${c.longitude}#map=15/${c.latitude}/${c.longitude}|">
+                                <i class="bi bi-geo-alt-fill text-danger"></i>
+                                <span th:text="|${#numbers.formatDecimal(c.latitude, 1, 5)}, ${#numbers.formatDecimal(c.longitude, 1, 5)}|">lat, lng</span>
+                            </a>
+                        </dd>
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.field.symptoms}">Symptoms</dt>
+                        <dd class="col-7">
+                            <span th:if="${c.symptoms.isEmpty()}">-</span>
+                            <span class="badge rounded-pill text-bg-light border me-1 mb-1 fw-normal"
+                                  th:each="s : ${c.symptoms}" th:text="${s.name(#locale.language)}">symptom</span>
+                        </dd>
+                        <dt class="col-5 text-muted fw-normal" th:text="#{case.field.description}">Description</dt>
+                        <dd class="col-7 mb-0" th:text="${c.description ?: '-'}">text</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status history (timeline) -->
+        <div class="col-12 col-lg-5">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h2 class="h5 mb-3"><i class="bi bi-clock-history text-success me-2"></i><span th:text="#{case.detail.history}">History</span></h2>
+                    <ul class="timeline">
+                        <li th:each="h : ${c.history}">
+                            <div class="fw-semibold" th:text="#{'status.' + ${h.toStatus}}">status</div>
+                            <small class="text-muted" th:text="${#temporals.format(h.createdAt, 'dd MMM yyyy, HH:mm')}">date</small>
+                            <div class="small mt-1" th:if="${h.note}" th:text="${h.note}">note</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Photos: files on disk, served from /uploads/... -->
+    <div class="card mt-4">
+        <div class="card-body">
+            <h2 class="h5 mb-3"><i class="bi bi-images text-success me-2"></i><span th:text="#{case.field.images}">Photos</span></h2>
+            <div class="row g-3">
+                <div class="col-6 col-md-4 col-lg-3" th:each="img : ${c.images}">
+                    <a th:href="@{'/uploads/' + ${img.filePath}}" target="_blank">
+                        <img class="case-photo" th:src="@{'/uploads/' + ${img.filePath}}" alt="crop photo">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(#{dashboard.admin})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <h1 class="h3" th:text="#{dashboard.admin}">Dashboard</h1>
+    <p class="text-muted"><span th:text="#{dashboard.signedInAs}">Signed in as</span> <span sec:authentication="name"></span></p>
+
+    <!-- Placeholder cards: each one becomes a link when its feature is built (see docs/roadmap.md). -->
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-4"><a class="text-decoration-none" th:href="@{/admin/cases}"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title" th:text="#{nav.allCases}">All cases</h2><span class="badge text-bg-success">F1, F4</span></div></div></a></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F20 Expert approvals &amp; moderation</h2><span class="badge text-bg-secondary">Sprint 1-4</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F15 Analytics dashboard</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">System settings &amp; thresholds</h2><span class="badge text-bg-secondary">Sprint 2</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F12 Outbreak map</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

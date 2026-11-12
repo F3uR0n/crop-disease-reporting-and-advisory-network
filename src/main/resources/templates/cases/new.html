@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{case.new.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4" style="max-width: 760px;">
+    <div class="mb-4">
+        <h1 class="h3 mb-1"><i class="bi bi-camera text-success me-2"></i><span th:text="#{case.new.title}">Report a crop problem</span></h1>
+        <p class="text-muted mb-0" th:text="#{case.new.subtitle}">Subtitle</p>
+    </div>
+
+    <div class="alert alert-danger" th:if="${param.tooLarge}">
+        <i class="bi bi-exclamation-triangle me-1"></i><span th:text="#{case.error.imageSize}">Too large</span>
+    </div>
+
+    <!-- enctype multipart/form-data is required to send files. th:action also adds the CSRF token. -->
+    <form th:action="@{/farmer/cases}" th:object="${form}" method="post" enctype="multipart/form-data" novalidate>
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <p class="mb-0" th:each="err : ${#fields.globalErrors()}" th:text="${err}">error</p>
+        </div>
+
+        <!-- Step 1: photos -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="h6 mb-3"><span class="step-number">1</span><span th:text="#{case.field.images}">Photos</span></h2>
+                <label class="upload-box" for="images">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                    <div class="fw-semibold mt-1" th:text="#{case.upload.tap}">Tap to take or choose photos</div>
+                    <div class="small" th:text="#{case.field.images.help}">help</div>
+                </label>
+                <input type="file" class="visually-hidden" id="images" name="images" accept="image/jpeg,image/png" multiple>
+                <!-- Thumbnails of the chosen photos (filled by the script below) -->
+                <div class="row g-2 mt-2" id="preview"></div>
+                <div class="text-danger small mt-2" th:if="${#fields.hasErrors('images')}">
+                    <i class="bi bi-exclamation-circle me-1"></i><span th:errors="*{images}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: crop and growth stage -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="h6 mb-3"><span class="step-number">2</span><span th:text="#{case.section.crop}">Crop</span></h2>
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label" th:text="#{case.field.crop}">Crop</label>
+                        <select class="form-select" th:field="*{cropId}" th:errorclass="is-invalid">
+                            <option value="" th:text="#{case.field.choose}">Choose...</option>
+                            <option th:each="c : ${crops}" th:value="${c.id}" th:text="${c.name(#locale.language)}">Rice</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{cropId}"></div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                        <label class="form-label" th:text="#{case.field.growthStage}">Growth stage</label>
+                        <select class="form-select" th:field="*{growthStage}" th:errorclass="is-invalid">
+                            <option value="" th:text="#{case.field.choose}">Choose...</option>
+                            <option th:each="g : ${growthStages}" th:value="${g}" th:text="#{'growthStage.' + ${g}}">stage</option>
+                        </select>
+                        <div class="invalid-feedback" th:errors="*{growthStage}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 3: symptom checklist + description -->
+        <div class="card mb-3">
+            <div class="card-body">
+                <h2 class="h6 mb-3"><span class="step-number">3</span><span th:text="#{case.field.symptoms}">Symptoms</span></h2>
+                <div class="row g-2 mb-3">
+                    <div class="col-12 col-sm-6" th:each="s : ${symptoms}">
+                        <div class="form-check symptom-tile">
+                            <input class="form-check-input" type="checkbox" th:field="*{symptomIds}" th:value="${s.id}">
+                            <label class="form-check-label w-100" th:for="${#ids.prev('symptomIds')}"
+                                   th:text="${s.name(#locale.language)}">symptom</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-danger small mb-2" th:if="${#fields.hasErrors('symptomIds')}">
+                    <i class="bi bi-exclamation-circle me-1"></i><span th:errors="*{symptomIds}"></span>
+                </div>
+                <label class="form-label" th:text="#{case.field.description}">Description</label>
+                <textarea class="form-control" rows="3" th:field="*{description}" th:errorclass="is-invalid"
+                          th:placeholder="#{case.field.description.help}"></textarea>
+                <div class="invalid-feedback" th:errors="*{description}"></div>
+            </div>
+        </div>
+
+        <!-- Step 4: GPS location. The button fills both boxes using the phone's GPS. -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h2 class="h6 mb-3"><span class="step-number">4</span><span th:text="#{case.field.location}">Location</span></h2>
+                <button type="button" class="btn btn-outline-success w-100 mb-2" id="gpsButton">
+                    <i class="bi bi-geo-alt me-1"></i><span th:text="#{case.gps.button}">Use my current location</span>
+                </button>
+                <div class="small text-success d-none mb-2" id="gpsOk">
+                    <i class="bi bi-check-circle me-1"></i><span th:text="#{case.gps.success}">Location captured</span>
+                </div>
+                <div class="small text-danger d-none mb-2" id="gpsError">
+                    <i class="bi bi-exclamation-circle me-1"></i><span th:text="#{case.gps.failed}">GPS failed</span>
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <label class="form-label small text-muted" th:text="#{case.field.latitude}">Latitude</label>
+                        <input type="number" step="any" class="form-control" th:field="*{latitude}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{latitude}"></div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small text-muted" th:text="#{case.field.longitude}">Longitude</label>
+                        <input type="number" step="any" class="form-control" th:field="*{longitude}" th:errorclass="is-invalid">
+                        <div class="invalid-feedback" th:errors="*{longitude}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg w-100">
+            <i class="bi bi-send me-1"></i><span th:text="#{case.submit}">Submit case</span>
+        </button>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script>
+    // Show a small thumbnail of each chosen photo, so the farmer can check them before sending.
+    document.getElementById('images').addEventListener('change', function () {
+        var preview = document.getElementById('preview');
+        preview.innerHTML = '';
+        Array.from(this.files).forEach(function (file) {
+            var col = document.createElement('div');
+            col.className = 'col-4 col-sm-3';
+            var img = document.createElement('img');
+            img.className = 'preview-img';
+            img.src = URL.createObjectURL(file);
+            col.appendChild(img);
+            preview.appendChild(col);
+        });
+    });
+
+    // Ask the browser for the GPS position and copy it into the latitude/longitude boxes.
+    // Note: browsers only allow GPS on https:// pages or on localhost.
+    document.getElementById('gpsButton').addEventListener('click', function () {
+        var ok = document.getElementById('gpsOk');
+        var error = document.getElementById('gpsError');
+        if (!navigator.geolocation) {
+            error.classList.remove('d-none');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(function (position) {
+            document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+            document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+            ok.classList.remove('d-none');
+            error.classList.add('d-none');
+        }, function () {
+            ok.classList.add('d-none');
+            error.classList.remove('d-none');
+        });
+    });
+</script>
+</body>
+</html>

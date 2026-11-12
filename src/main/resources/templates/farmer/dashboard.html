@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(#{dashboard.farmer})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <div class="page-header d-flex justify-content-between align-items-center gap-3 flex-wrap mb-4">
+        <div>
+            <h1 class="h4 mb-1" th:text="#{dashboard.farmer}">Dashboard</h1>
+            <p class="text-muted mb-0 small"><i class="bi bi-person-circle me-1"></i><span th:text="#{dashboard.signedInAs}">Signed in as</span> <span sec:authentication="name"></span></p>
+        </div>
+        <a class="btn btn-success" th:href="@{/farmer/cases/new}">
+            <i class="bi bi-camera me-1"></i><span th:text="#{nav.reportCase}">Report a problem</span>
+        </a>
+    </div>
+
+    <!-- Feature 4: how many of my cases are in each main stage -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3" th:each="s : ${mainStages}">
+            <div class="card stat-card h-100" th:classappend="|stat-${s}|">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number" th:text="${statusCounts.get(s)}">0</div>
+                        <div class="small text-muted mt-1" th:text="#{'status.' + ${s}}">status</div>
+                    </div>
+                    <span class="stat-icon"><i th:replace="~{fragments/layout :: statusIcon(${s})}"></i></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Most recent cases -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h2 class="h5 mb-0"><i class="bi bi-clock-history text-success me-2"></i><span th:text="#{dashboard.recentCases}">Recent cases</span></h2>
+                <a th:href="@{/farmer/cases}" class="small text-decoration-none">
+                    <span th:text="#{dashboard.allMyCases}">All my cases</span> <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="empty-state" th:if="${recentCases.isEmpty()}">
+                <i class="bi bi-flower2"></i>
+                <p th:text="#{case.list.empty}">No cases yet.</p>
+                <a class="btn btn-outline-success" th:href="@{/farmer/cases/new}" th:text="#{dashboard.firstCase}">Report your first problem</a>
+            </div>
+            <div class="list-group list-group-flush" th:unless="${recentCases.isEmpty()}">
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center px-0"
+                   th:each="c : ${recentCases}" th:href="@{/farmer/cases/{id}(id=${c.id})}">
+                    <span>
+                        <span class="fw-semibold">#<span th:text="${c.id}">1</span> &middot; <span th:text="${c.crop.name(#locale.language)}">Rice</span></span>
+                        <small class="text-muted d-block" th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, HH:mm')}">date</small>
+                    </span>
+                    <span th:replace="~{fragments/layout :: statusBadge(${c.status})}"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Placeholder cards: each one becomes a link when its feature is built (see docs/roadmap.md). -->
+    <h2 class="h6 text-muted text-uppercase mb-3" th:text="#{dashboard.comingSoon}">Coming soon</h2>
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-map me-2 text-success"></i>F5 My fields &amp; crops</h2><span class="badge text-bg-secondary">Sprint 1</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-calendar-check me-2 text-success"></i>F10 Follow-ups</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-exclamation-triangle me-2 text-success"></i>F13 Outbreak alerts</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-lightbulb me-2 text-success"></i>F17 Advice for my crops</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-people me-2 text-success"></i>F18 Community board</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-chat-dots me-2 text-success"></i>F21 Ask the chatbot</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
