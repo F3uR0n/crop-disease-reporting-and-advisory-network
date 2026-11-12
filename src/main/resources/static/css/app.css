@@ -1,0 +1,262 @@
+/* Large tap targets and readable text: farmers mostly use low-end phone browsers. */
+:root {
+    --app-green: #1b7a43;
+    --app-green-dark: #145c32;
+    --app-green-light: #e8f5ec;
+}
+
+body {
+    font-size: 1.05rem;
+    background-color: #f4f7f3;
+}
+
+.btn {
+    min-height: 44px;
+}
+
+.btn-sm {
+    min-height: 34px;
+}
+
+/* ---------- Layout ---------- */
+.app-navbar {
+    background: linear-gradient(90deg, var(--app-green-dark), var(--app-green));
+}
+
+.bell-badge {
+    position: absolute;
+    top: 2px;
+    left: 18px;
+    font-size: .65rem;
+}
+
+.app-footer {
+    border-top: 1px solid #e3e8e2;
+}
+
+.card {
+    border: 0;
+    border-radius: .9rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 4px 12px rgba(0, 0, 0, .04);
+}
+
+.page-header {
+    background: #fff;
+    border-radius: .9rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+.feature-card {
+    height: 100%;
+    transition: transform .15s;
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+}
+
+.feature-card .badge {
+    font-weight: 500;
+}
+
+/* ---------- Case status colours (Feature 4) ---------- */
+.status-badge {
+    font-weight: 500;
+    padding: .4em .7em;
+}
+
+.status-SUBMITTED { background-color: #6c757d; }
+.status-AI_ANALYZED { background-color: #0d6efd; }
+.status-UNDER_REVIEW { background-color: #e8740c; }
+.status-RESOLVED { background-color: #198754; }
+.status-CLOSED { background-color: #343a40; }
+.status-REJECTED { background-color: #dc3545; }
+
+/* Dashboard counter cards: coloured left edge matching the status */
+.stat-card {
+    border-left: 5px solid #adb5bd;
+}
+
+.stat-card.stat-SUBMITTED { border-left-color: #6c757d; }
+.stat-card.stat-AI_ANALYZED { border-left-color: #0d6efd; }
+.stat-card.stat-UNDER_REVIEW { border-left-color: #e8740c; }
+.stat-card.stat-RESOLVED { border-left-color: #198754; }
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-card .stat-icon {
+    font-size: 1.8rem;
+    opacity: .35;
+}
+
+/* ---------- Case page: progress bar of the 4 main stages ---------- */
+.case-steps {
+    display: flex;
+    gap: .5rem;
+    flex-wrap: wrap;
+}
+
+.case-steps .step {
+    flex: 1 1 0;
+    min-width: 7rem;
+    text-align: center;
+    padding: .75rem .5rem;
+    border-radius: .75rem;
+    background: #e9ecef;
+    color: #8a9399;
+    font-size: .9rem;
+}
+
+.case-steps .step i {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: .2rem;
+}
+
+.case-steps .step.done {
+    background: var(--app-green-light);
+    color: var(--app-green-dark);
+    font-weight: 600;
+}
+
+/* Case page: vertical status history */
+.timeline {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.timeline li {
+    position: relative;
+    padding: 0 0 1.1rem 1.75rem;
+    border-left: 2px solid #dfe5de;
+    margin-left: .5rem;
+}
+
+.timeline li:last-child {
+    border-left-color: transparent;
+    padding-bottom: 0;
+}
+
+.timeline li::before {
+    content: "";
+    position: absolute;
+    left: -7px;
+    top: .35rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--app-green);
+    box-shadow: 0 0 0 3px var(--app-green-light);
+}
+
+.case-photo {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: .75rem;
+    transition: transform .15s;
+}
+
+.case-photo:hover {
+    transform: scale(1.02);
+}
+
+/* ---------- Case form ---------- */
+.step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.8rem;
+    height: 1.8rem;
+    border-radius: 50%;
+    background: var(--app-green);
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 600;
+    margin-right: .5rem;
+}
+
+/* Clickable upload area */
+.upload-box {
+    display: block;
+    border: 2px dashed #b6c7b8;
+    border-radius: .9rem;
+    padding: 1.75rem 1rem;
+    text-align: center;
+    background: #fafcf9;
+    cursor: pointer;
+    color: #5c6b5f;
+}
+
+.upload-box:hover {
+    border-color: var(--app-green);
+    background: var(--app-green-light);
+}
+
+.upload-box i {
+    font-size: 2.2rem;
+    color: var(--app-green);
+}
+
+.preview-img {
+    width: 100%;
+    height: 90px;
+    object-fit: cover;
+    border-radius: .5rem;
+}
+
+/* Symptom checklist rendered as tappable tiles */
+.symptom-tile {
+    border: 1px solid #dfe5de;
+    border-radius: .6rem;
+    padding: .55rem .75rem .55rem 2.2rem;
+    background: #fff;
+    height: 100%;
+}
+
+.symptom-tile:has(input:checked) {
+    border-color: var(--app-green);
+    background: var(--app-green-light);
+}
+
+/* ---------- Notifications ---------- */
+.notification-item {
+    border: 0;
+    border-radius: .75rem !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+.notification-unread {
+    border-left: 4px solid var(--app-green) !important;
+    background: #fff;
+}
+
+.notification-icon {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--app-green-light);
+    color: var(--app-green);
+    flex-shrink: 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: #7a867c;
+}
+
+.empty-state i {
+    font-size: 2.6rem;
+    display: block;
+    margin-bottom: .5rem;
+}

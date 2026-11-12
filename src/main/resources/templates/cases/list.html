@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(#{case.list.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<!-- Shared by the farmer ("My cases") and the admin ("All cases", showFarmer = true). -->
+<main class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-3 gap-2 flex-wrap">
+        <h1 class="h3 mb-0"><i class="bi bi-folder2-open text-success me-2"></i><span th:text="#{case.list.title}">Cases</span></h1>
+        <a class="btn btn-success" sec:authorize="hasRole('FARMER')" th:href="@{/farmer/cases/new}">
+            <i class="bi bi-plus-lg me-1"></i><span th:text="#{nav.reportCase}">Report a problem</span>
+        </a>
+    </div>
+
+    <div class="card empty-state" th:if="${cases.isEmpty()}">
+        <i class="bi bi-inbox"></i>
+        <span th:text="#{case.list.empty}">No cases yet.</span>
+    </div>
+
+    <div class="card" th:unless="${cases.isEmpty()}">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th class="ps-3">#</th>
+                    <th th:if="${showFarmer}" th:text="#{case.farmer}">Farmer</th>
+                    <th th:text="#{case.field.crop}">Crop</th>
+                    <th class="d-none d-sm-table-cell" th:text="#{case.field.growthStage}">Stage</th>
+                    <th th:text="#{case.status}">Status</th>
+                    <th class="d-none d-md-table-cell" th:text="#{case.submittedAt}">Submitted</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="c : ${cases}">
+                    <td class="ps-3 fw-semibold" th:text="${c.id}">1</td>
+                    <td th:if="${showFarmer}" th:text="${c.farmer.fullName}">Rahim</td>
+                    <td th:text="${c.crop.name(#locale.language)}">Rice</td>
+                    <td class="d-none d-sm-table-cell" th:text="#{'growthStage.' + ${c.growthStage}}">stage</td>
+                    <td><span th:replace="~{fragments/layout :: statusBadge(${c.status})}"></span></td>
+                    <td class="d-none d-md-table-cell text-muted small" th:text="${#temporals.format(c.createdAt, 'dd MMM yyyy, HH:mm')}">date</td>
+                    <td class="text-end pe-3">
+                        <a class="btn btn-sm btn-outline-success" th:href="@{${baseUrl} + '/' + ${c.id}}">
+                            <i class="bi bi-eye"></i> <span class="d-none d-sm-inline" th:text="#{case.view}">View</span>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

@@ -2,8 +2,12 @@
 
 ## Project Status
 
-This repository contains the code & documentation for a CSE470 Software Engineering project. 
-Implementation has not started yet.
+This repository contains the code & documentation for a CSE470 Software Engineering project.
+Sprint 0 (foundation) is complete: project skeleton, MVC layout, role-based login, registration
+and Bangla/English switching. Implemented so far: **F1 Disease Case Submission** and **F4 Case Tracking**
+(status history, dashboard, notifications). Case photos are saved as files in `uploads/` (git-ignored);
+the database stores only their paths. See [docs/roadmap.md](docs/roadmap.md) for the full plan and
+[docs/class-diagram.md](docs/class-diagram.md) for the domain model.
 
 ## Project Overview
 
@@ -86,27 +90,52 @@ The following 20 features are planned for the project.
     verification and administrative handling of expert approval, flagged
     content, and duplicate or fake reports.
 
-## Planned MVC Architecture
+21. **Farmer Advisory Chatbot:** Answer farmers' questions in Bangla or English
+    using their crops, their case and the knowledge base as context.
 
-The main application must use a framework that visibly supports the
-Model-View-Controller (MVC) architecture. The specific framework has not yet
-been selected.
+## MVC Architecture
 
-### AI/ML Service Boundary
+Spring MVC with server-rendered Thymeleaf views:
 
-AI disease detection is a planned feature not a completed component. If a
-Python-based AI/ML service is needed, it will be kept separate from the primary
-MVC application and connected through a clearly defined API or interface. The
-main application will still use an approved MVC-oriented framework and the
-team will document the data flow, service boundary, confidence handling and
-limitations.
+- **Model:** JPA entities (`model/entity`), repositories (`repository`) and
+  services holding the business rules (`service`).
+- **View:** Thymeleaf templates (`src/main/resources/templates`), display only.
+- **Controller:** `@Controller` classes (`controller`) that validate input, call a
+  service and choose the view.
+
+Details, request trace and conventions: [docs/roadmap.md](docs/roadmap.md).
+
+### AI Service Boundary
+
+Instead of training a CNN, the application calls an external LLM API (vision
+model for diagnosis, chat model for the chatbot) directly from Java through the
+`DiseaseClassifier` interface. There is no Python service. Low-confidence or
+failed AI results are escalated to an expert.
 
 ## Technology Stack
 
-The technology stack has not been selected yet.
+| Concern | Choice |
+|---|---|
+| Language | Java 21 |
+| Framework | Spring Boot 4.1 (Spring MVC, Spring Security, Spring Data JPA) |
+| Views | Thymeleaf, Bootstrap 5, Leaflet.js, Chart.js |
+| Database | MySQL 8, Flyway migrations (H2 in-memory for tests / quick start) |
+| AI | External LLM API via Spring `RestClient` |
+| Build / tests | Maven wrapper, JUnit 5, Mockito, MockMvc |
 
-## Project Directory
+## Getting Started
 
-This directory is the starting point for the Crop Disease Reporting & Advisory
-Network project. Source code, tests, configuration and supporting
-documentation will be added after the planning and approval stages.
+Requires JDK 21+. Maven is not needed (wrapper included).
+
+```bash
+# Quick start without MySQL (in-memory DB, admin login 01700000000 / admin12345)
+./mvnw spring-boot:run -Dspring-boot.run.profiles=h2      # Windows: mvnw.cmd ...
+
+# With MySQL: copy .env.example to .env, fill in values, then
+./mvnw spring-boot:run
+
+# Run tests
+./mvnw test
+```
+
+Open http://localhost:8080.

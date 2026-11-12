@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(#{home.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-5">
+    <div class="text-center">
+        <h1 class="display-6" th:text="#{app.name}">Crop Disease Reporting and Advisory Network</h1>
+        <p class="lead" th:text="#{home.tagline}">tagline</p>
+        <div sec:authorize="!isAuthenticated()">
+            <a class="btn btn-success btn-lg m-1" th:href="@{/register}" th:text="#{nav.register}">Register</a>
+            <a class="btn btn-outline-success btn-lg m-1" th:href="@{/login}" th:text="#{nav.login}">Login</a>
+        </div>
+        <a sec:authorize="isAuthenticated()" class="btn btn-success btn-lg" th:href="@{/dashboard}"
+           th:text="#{nav.dashboard}">Dashboard</a>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
