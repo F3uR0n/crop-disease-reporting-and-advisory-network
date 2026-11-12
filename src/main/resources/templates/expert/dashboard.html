@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(#{dashboard.expert})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-4">
+    <h1 class="h3" th:text="#{dashboard.expert}">Dashboard</h1>
+    <p class="text-muted"><span th:text="#{dashboard.signedInAs}">Signed in as</span> <span sec:authentication="name"></span></p>
+
+    <!-- Placeholder cards: each one becomes a link when its feature is built (see docs/roadmap.md). -->
+    <div class="row g-3">
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F6 Review queue</h2><span class="badge text-bg-secondary">Sprint 2</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F7 Treatment plans</h2><span class="badge text-bg-secondary">Sprint 2</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F16 Knowledge base</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
+        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title">F18 Answer questions</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
