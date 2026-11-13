@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('My Farms')}"></head>
+<body>
+    <nav th:replace="~{fragments/layout :: navbar}"></nav>
+    <main class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">My Farm Profiles</h2>
+            <a th:href="@{/farmer/farms/new}" class="btn btn-success">
+                <i class="bi bi-plus-circle me-1"></i> Add New Farm
+            </a>
+        </div>
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="py-3 px-4">Farm Name</th>
+                                <th class="py-3 px-4">Location</th>
+                                <th class="py-3 px-4">Area (Acres)</th>
+                                <th class="py-3 px-4">Current Crops</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="farm : ${farms}">
+                                <td class="py-3 px-4 fw-semibold" th:text="${farm.farmName}">Farm Name</td>
+                                <td class="py-3 px-4" th:text="${farm.location}">Location</td>
+                                <td class="py-3 px-4" th:text="${farm.totalAreaInAcres}">Area</td>
+                                <td class="py-3 px-4">
+                                    <span th:each="crop : ${farm.currentCrops}"
+                                          th:text="${crop.nameEn}"
+                                          class="badge bg-success bg-opacity-10 text-success me-1">Crop</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(farms)}">
+                                <td colspan="4" class="text-center py-4 text-muted">No farms found. Click "Add New Farm" to get started.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>

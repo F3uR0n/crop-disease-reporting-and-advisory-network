@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(#{register.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container py-5" style="max-width: 560px;">
+    <h1 class="h3 mb-4" th:text="#{register.title}">Register</h1>
+
+    <!-- th:object binds to the RegistrationForm DTO; th:field fills values and th:errors shows validation messages -->
+    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
+        <div class="alert alert-danger" th:if="${#fields.hasGlobalErrors()}">
+            <p class="mb-0" th:each="err : ${#fields.globalErrors()}" th:text="${err}">error</p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.accountType}">Account type</label>
+            <select class="form-select" th:field="*{accountType}">
+                <option th:each="t : ${accountTypes}" th:value="${t}" th:text="#{'role.' + ${t}}">type</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.fullName}">Full name</label>
+            <input type="text" class="form-control" th:field="*{fullName}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{fullName}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.phone}">Phone</label>
+            <input type="tel" class="form-control" th:field="*{phone}" placeholder="01XXXXXXXXX" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{phone}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.emailOptional}">Email (optional)</label>
+            <input type="email" class="form-control" th:field="*{email}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{email}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.language}">Language</label>
+            <select class="form-select" th:field="*{preferredLanguage}">
+                <option th:each="l : ${languages}" th:value="${l}" th:text="#{'language.' + ${l}}">lang</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.password}">Password</label>
+            <input type="password" class="form-control" th:field="*{password}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{password}"></div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label" th:text="#{field.confirmPassword}">Confirm password</label>
+            <input type="password" class="form-control" th:field="*{confirmPassword}" th:errorclass="is-invalid">
+            <div class="invalid-feedback" th:errors="*{confirmPassword}"></div>
+        </div>
+
+        <fieldset class="border rounded p-3 mb-3">
+            <legend class="fs-6 w-auto px-2" th:text="#{register.expertOnly}">Experts only</legend>
+            <div class="mb-3">
+                <label class="form-label" th:text="#{field.qualification}">Qualification</label>
+                <input type="text" class="form-control" th:field="*{qualification}" th:errorclass="is-invalid">
+                <div class="invalid-feedback" th:errors="*{qualification}"></div>
+            </div>
+            <div>
+                <label class="form-label" th:text="#{field.institution}">Institution</label>
+                <input type="text" class="form-control" th:field="*{institution}">
+            </div>
+        </fieldset>
+
+        <button type="submit" class="btn btn-success w-100" th:text="#{nav.register}">Register</button>
+    </form>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+</body>
+</html>
