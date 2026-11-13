@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Seasonal Risk Forecast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-6xl mx-auto">
+        <h1 class="text-3xl font-bold text-green-800 mb-6">Seasonal Disease Risk Forecast</h1>
+        
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-100">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Region</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Crop</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Season</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Risk Level</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr th:each="forecast : ${forecasts}">
+                        <td class="px-6 py-4 font-medium text-gray-900" th:text="${forecast.region}">Dhaka</td>
+                        <td class="px-6 py-4 text-gray-700" th:text="${forecast.crop}">Rice</td>
+                        <td class="px-6 py-4 text-gray-700" th:text="${forecast.season}">KHARIF_2</td>
+                        <td class="px-6 py-4">
+                            <span th:class="'px-3 py-1 rounded-full text-xs font-bold ' + 
+                                (${forecast.riskLevel.name() == 'LOW'} ? 'bg-green-100 text-green-800' : '') +
+                                (${forecast.riskLevel.name() == 'MEDIUM'} ? 'bg-yellow-100 text-yellow-800' : '') +
+                                (${forecast.riskLevel.name() == 'HIGH'} ? 'bg-orange-100 text-orange-800' : '') +
+                                (${forecast.riskLevel.name() == 'CRITICAL'} ? 'bg-red-100 text-red-800' : '')"
+                                th:text="${forecast.riskLevel}">HIGH</span>
+                        </td>
+                        <td class="px-6 py-4 text-gray-500 text-sm" 
+                            th:text="${#temporals.format(forecast.lastCalculatedAt, 'dd MMM yyyy, HH:mm')}">
+                            12 Nov 2026
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
