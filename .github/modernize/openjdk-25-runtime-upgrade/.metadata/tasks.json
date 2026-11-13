@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Tasks for upgrading the crop-disease-network Java runtime to OpenJDK 25 LTS.",
+  "tasks": [
+    {
+      "type": "upgrade",
+      "id": "001-upgrade-java-runtime-to-openjdk-25",
+      "description": "Upgrade the application runtime from Java 21 to OpenJDK 25 LTS. Addresses assessment issue: Java Version is not the latest LTS (azure-java-version-02000).",
+      "reason": "The assessment found the project declares Java 21, which is not the latest LTS runtime.",
+      "requirements": "Update runtime and toolchain declarations needed to build and run with OpenJDK 25 LTS. Make only compatibility fixes directly required by this runtime change. Do not upgrade Spring Boot or unrelated dependencies. Do not modify the tagged farmer HTML template unless a directly necessary compatibility issue is demonstrated. Preserve application behavior and verify compilation and unit tests on Java 25.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      }
+    },
+    {
+      "type": "setupBaseline",
+      "id": "002-setup-baseline",
+      "description": "Capture the pre-upgrade application behavior for post-upgrade comparison.",
+      "requirements": "Record the existing behavior and test evidence before Java runtime changes; keep the baseline read-only and do not alter application files.",
+      "snapshotFolder": "src"
+    },
+    {
+      "type": "integrationTest",
+      "id": "003-integrationTest",
+      "description": "Build integration tests for Java 25 runtime and run post-upgrade verification",
+      "requirements": "Verify the application starts and its existing critical flows continue to work under OpenJDK 25. Use test-local or mocked dependencies; do not provision infrastructure or change application scope. Avoid modifying the tagged farmer HTML template unless directly necessary.",
+      "dependencies": [
+        "001-upgrade-java-runtime-to-openjdk-25",
+        "002-setup-baseline"
+      ]
+    },
+    {
+      "type": "security",
+      "id": "004-security-cve-remediation",
+      "description": "Scan project dependencies for known CVEs and remediate any identified vulnerabilities.",
+      "requirements": "Upgrade vulnerable dependencies to the minimum patched version. If a CVE fix requires a major version upgrade, document the affected dependency, current and upgraded versions, and breaking-change risk. Verify the project builds and all tests pass after remediation. Run after the Java runtime upgrade and its verification.",
+      "successCriteria": {
+        "passBuild": "true",
+        "generateNewUnitTests": "false",
+        "passUnitTests": "true"
+      },
+      "dependencies": [
+        "001-upgrade-java-runtime-to-openjdk-25",
+        "003-integrationTest"
+      ]
+    }
+  ],
+  "metadata": {
+    "planName": "openjdk-25-runtime-upgrade",
+    "projectName": "crop-disease-network",
+    "language": "java",
+    "createdAt": "2026-11-13T19:13:57.925+06:00",
+    "version": "1.0"
+  }
+}
