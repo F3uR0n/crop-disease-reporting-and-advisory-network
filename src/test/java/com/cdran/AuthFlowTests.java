@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -69,6 +70,18 @@ class AuthFlowTests {
         assertThat(saved.getRole()).isEqualTo(Role.FARMER);
         assertThat(saved.getStatus()).isEqualTo(AccountStatus.ACTIVE);
         assertThat(saved.getPasswordHash()).isNotEqualTo("secret123");
+    }
+
+    @Test
+    void farmerDashboardShowsFarmLinksAndNoLongerMarksFarmFeatureComingSoon() throws Exception {
+        MvcResult result = mvc.perform(get("/farmer/dashboard")
+                        .with(user("01711111111").roles("FARMER")))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString())
+                .contains("My farms", "Add a farm", "/farmer/farms", "/farmer/farms/new")
+                .doesNotContain("F5 My fields");
     }
 
     @Test

@@ -10,9 +10,17 @@
             <h1 class="h4 mb-1" th:text="#{dashboard.farmer}">Dashboard</h1>
             <p class="text-muted mb-0 small"><i class="bi bi-person-circle me-1"></i><span th:text="#{dashboard.signedInAs}">Signed in as</span> <span sec:authentication="name"></span></p>
         </div>
-        <a class="btn btn-success" th:href="@{/farmer/cases/new}">
-            <i class="bi bi-camera me-1"></i><span th:text="#{nav.reportCase}">Report a problem</span>
-        </a>
+        <div class="d-flex gap-2 flex-wrap">
+            <a class="btn btn-outline-success" th:href="@{/farmer/farms}">
+                <i class="bi bi-house me-1"></i><span th:text="#{nav.myFarms}">My farms</span>
+            </a>
+            <a class="btn btn-success" th:href="@{/farmer/farms/new}">
+                <i class="bi bi-plus-circle me-1"></i><span th:text="#{nav.addFarm}">Add a farm</span>
+            </a>
+            <a class="btn btn-success" th:href="@{/farmer/cases/new}">
+                <i class="bi bi-camera me-1"></i><span th:text="#{nav.reportCase}">Report a problem</span>
+            </a>
+        </div>
     </div>
 
     <!-- Feature 4: how many of my cases are in each main stage -->
@@ -60,7 +68,6 @@
     <!-- Placeholder cards: each one becomes a link when its feature is built (see docs/roadmap.md). -->
     <h2 class="h6 text-muted text-uppercase mb-3" th:text="#{dashboard.comingSoon}">Coming soon</h2>
     <div class="row g-3">
-        <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-map me-2 text-success"></i>F5 My fields &amp; crops</h2><span class="badge text-bg-secondary">Sprint 1</span></div></div></div>
         <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-calendar-check me-2 text-success"></i>F10 Follow-ups</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
         <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-exclamation-triangle me-2 text-success"></i>F13 Outbreak alerts</h2><span class="badge text-bg-secondary">Sprint 3</span></div></div></div>
         <div class="col-12 col-md-6 col-lg-4"><div class="card feature-card"><div class="card-body"><h2 class="h6 card-title"><i class="bi bi-lightbulb me-2 text-success"></i>F17 Advice for my crops</h2><span class="badge text-bg-secondary">Sprint 4</span></div></div></div>
