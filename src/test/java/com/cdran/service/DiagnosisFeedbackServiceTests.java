@@ -1,21 +1,14 @@
 package com.cdran.service;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cdran.dto.DiagnosisFeedbackForm;
 import com.cdran.exception.BusinessRuleException;
@@ -27,9 +20,16 @@ import com.cdran.model.enums.FollowUpStatus;
 import com.cdran.model.enums.NotificationType;
 import com.cdran.model.enums.RecoveryOutcome;
 import com.cdran.model.enums.ReviewDecision;
+import com.cdran.model.enums.Role;
 import com.cdran.repository.DiagnosisFeedbackRepository;
 import com.cdran.repository.DiseaseCaseRepository;
 import com.cdran.repository.UserRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class DiagnosisFeedbackServiceTests {
@@ -55,14 +55,14 @@ class DiagnosisFeedbackServiceTests {
         service = new DiagnosisFeedbackService(
                 feedbackRepository, diseaseCaseRepository, userRepository, notificationService);
         farmer = mock(Farmer.class);
-        when(farmer.getPhone()).thenReturn("01711111111");
-
         expert = mock(Expert.class);
-        when(expert.getPhone()).thenReturn("01822222222");
     }
 
     @Test
     void submitOrUpdateRecordsFeedbackAndNotifiesFarmerWhenReviewedByExpert() {
+        when(farmer.getPhone()).thenReturn("01711111111");
+        when(expert.getPhone()).thenReturn("01822222222");
+
         DiseaseCase diseaseCase = mock(DiseaseCase.class);
         when(diseaseCase.getId()).thenReturn(5L);
         when(diseaseCase.getFarmer()).thenReturn(farmer);
@@ -95,6 +95,9 @@ class DiagnosisFeedbackServiceTests {
 
     @Test
     void correctedDecisionWithoutExpertLabelThrowsBusinessRuleException() {
+        when(farmer.getRole()).thenReturn(Role.FARMER);
+        when(farmer.getPhone()).thenReturn("01711111111");
+
         DiseaseCase diseaseCase = mock(DiseaseCase.class);
         when(diseaseCase.getFarmer()).thenReturn(farmer);
 
@@ -113,6 +116,9 @@ class DiagnosisFeedbackServiceTests {
 
     @Test
     void updatingExistingFeedbackOverwritesCleanly() {
+        when(farmer.getRole()).thenReturn(Role.FARMER);
+        when(farmer.getPhone()).thenReturn("01711111111");
+
         DiseaseCase diseaseCase = mock(DiseaseCase.class);
         when(diseaseCase.getId()).thenReturn(5L);
         when(diseaseCase.getFarmer()).thenReturn(farmer);

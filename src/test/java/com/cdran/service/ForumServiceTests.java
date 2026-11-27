@@ -1,20 +1,13 @@
 package com.cdran.service;
 
-import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.cdran.dto.ContentFlagForm;
 import com.cdran.dto.ForumAnswerForm;
@@ -35,6 +28,12 @@ import com.cdran.repository.CropRepository;
 import com.cdran.repository.ForumAnswerRepository;
 import com.cdran.repository.ForumPostRepository;
 import com.cdran.repository.UserRepository;
+import java.util.Optional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ForumServiceTests {
@@ -72,16 +71,14 @@ class ForumServiceTests {
                 notificationService);
 
         farmer = mock(Farmer.class);
-        when(farmer.getPhone()).thenReturn("01711111111");
-        when(farmer.getRole()).thenReturn(Role.FARMER);
-
         expert = mock(Expert.class);
-        when(expert.getPhone()).thenReturn("01822222222");
-        when(expert.getRole()).thenReturn(Role.EXPERT);
     }
 
     @Test
     void addAnswerMarksPostAnsweredAndNotifiesPostAuthor() {
+        when(farmer.getPhone()).thenReturn("01711111111");
+        when(expert.getPhone()).thenReturn("01822222222");
+
         ForumPost post = new ForumPost();
         post.setAuthor(farmer);
         post.setTitle("Leaf spots on paddy");
@@ -108,6 +105,7 @@ class ForumServiceTests {
 
     @Test
     void farmerCannotVerifyAnswerThrowsBusinessRuleException() {
+        when(farmer.getRole()).thenReturn(Role.FARMER);
         when(userRepository.findByPhone("01711111111")).thenReturn(Optional.of(farmer));
 
         assertThrows(BusinessRuleException.class,
@@ -116,6 +114,7 @@ class ForumServiceTests {
 
     @Test
     void expertCanVerifyAnswer() {
+        when(expert.getRole()).thenReturn(Role.EXPERT);
         ForumAnswer answer = new ForumAnswer();
         when(userRepository.findByPhone("01822222222")).thenReturn(Optional.of(expert));
         when(answerRepository.findById(3L)).thenReturn(Optional.of(answer));
@@ -128,9 +127,6 @@ class ForumServiceTests {
 
     @Test
     void flagContentCreatesOpenFlagForPost() {
-        ForumPostForm postForm = new ForumPostForm();
-        postForm.setTitle("Test");
-        postForm.setBody("Body");
         ForumPost post = new ForumPost();
         post.setAuthor(farmer);
 
