@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section})}">
+<body>
+<section class="max-w-3xl mx-auto p-6 space-y-6">
+    <h1 class="text-2xl font-bold" th:text="#{forum.action.newPost}">Ask a Question</h1>
+
+    <form th:action="@{/forum/posts}"
+          th:object="${postForm}"
+          method="post"
+          class="space-y-4">
+
+        <div>
+            <label class="block font-medium" th:text="#{forum.label.title}">Title</label>
+            <input type="text" th:field="*{title}" class="mt-1 w-full border rounded p-2"/>
+            <p class="text-red-600 text-sm" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></p>
+        </div>
+
+        <div>
+            <label class="block font-medium" th:text="#{forum.label.crop}">Crop Tag</label>
+            <select th:field="*{cropId}" class="mt-1 w-full border rounded p-2">
+                <option value="" th:text="#{forum.filter.allCrops}">None</option>
+                <option th:each="c : ${crops}" th:value="${c.id}" th:text="${c.nameEn}">Crop</option>
+            </select>
+        </div>
+
+        <div>
+            <label class="block font-medium" th:text="#{forum.label.body}">Details</label>
+            <textarea rows="5" th:field="*{body}" class="mt-1 w-full border rounded p-2"></textarea>
+            <p class="text-red-600 text-sm" th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></p>
+        </div>
+
+        <button type="submit"
+                class="px-4 py-2 rounded bg-emerald-600 text-white"
+                th:text="#{forum.action.publishPost}">Publish Post</button>
+    </form>
+</section>
+</body>
+</html>

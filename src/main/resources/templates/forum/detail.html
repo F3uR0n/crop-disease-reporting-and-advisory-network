@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section})}">
+<body>
+<section class="max-w-4xl mx-auto p-6 space-y-6">
+    <div th:if="${successMessage}"
+         class="p-3 rounded bg-emerald-100 text-emerald-800"
+         th:text="#{${successMessage}}">Saved</div>
+    <div th:if="${errorMessage}"
+         class="p-3 rounded bg-red-100 text-red-800"
+         th:text="#{${errorMessage}}">Error</div>
+
+    <div class="border rounded p-4 space-y-3">
+        <div class="flex items-center justify-between">
+            <h1 class="text-2xl font-bold" th:text="${post.title}">Thread Title</h1>
+            <form th:action="@{/forum/posts/{id}/hide(id=${post.id})}" method="post">
+                <button type="submit"
+                        class="px-3 py-1 rounded bg-gray-700 text-white text-sm"
+                        th:text="#{forum.action.hidePost}">Hide Post</button>
+            </form>
+        </div>
+        <p th:text="${post.body}">Thread body</p>
+        <div class="text-sm text-gray-500">
+            <span th:text="${post.author.fullName}">Author</span>
+            <span th:if="${post.cropTag != null}" th:text="' • ' + ${post.cropTag.nameEn}"> • Crop</span>
+        </div>
+    </div>
+
+    <div class="space-y-3">
+        <h2 class="text-xl font-semibold" th:text="#{forum.label.replies}">Answers &amp; Replies</h2>
+        <div th:each="ans : ${post.answers}" class="border rounded p-3 space-y-2">
+            <p th:text="${ans.body}">Answer body</p>
+            <div class="flex items-center justify-between text-sm text-gray-500">
+                <div>
+                    <span th:text="${ans.author.fullName}">Responder</span>
+                    <span th:if="${ans.verified}"
+                          class="ml-2 px-2 py-0.5 rounded bg-emerald-100 text-emerald-800"
+                          th:text="#{forum.label.verified}">Verified</span>
+                </div>
+                <form th:if="${!ans.verified}"
+                      th:action="@{/forum/answers/{answerId}/verify(answerId=${ans.id})}"
+                      method="post">
+                    <input type="hidden" name="postId" th:value="${post.id}"/>
+                    <button type="submit"
+                            class="px-2 py-1 rounded bg-blue-600 text-white text-xs"
+                            th:text="#{forum.action.verify}">Verify Answer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <form th:action="@{/forum/posts/{id}/answers(id=${post.id})}"
+          th:object="${answerForm}"
+          method="post"
+          class="space-y-3 border rounded p-4">
+        <label class="block font-medium" th:text="#{forum.label.addReply}">Write a Reply</label>
+        <textarea rows="4" th:field="*{body}" class="w-full border rounded p-2"></textarea>
+        <p class="text-red-600 text-sm" th:if="${#fields.hasErrors('body')}" th:errors="*{body}"></p>
+        <button type="submit"
+                class="px-4 py-2 rounded bg-emerald-600 text-white"
+                th:text="#{forum.action.postReply}">Post Reply</button>
+    </form>
+
+    <form th:action="@{/forum/flag}"
+          th:object="${flagForm}"
+          method="post"
+          class="space-y-3 border rounded p-4 bg-amber-50">
+        <input type="hidden" th:field="*{targetType}"/>
+        <input type="hidden" th:field="*{targetId}"/>
+        <label class="block font-medium" th:text="#{forum.label.flagReason}">Flag for Moderation</label>
+        <input type="text" th:field="*{reason}" class="w-full border rounded p-2"/>
+        <button type="submit"
+                class="px-3 py-1.5 rounded bg-amber-600 text-white text-sm"
+                th:text="#{forum.action.flag}">Submit Flag</button>
+    </form>
+</section>
+</body>
+</html>
