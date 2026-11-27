@@ -1,0 +1,1 @@
+ALTER TABLE seasonal_risk_forecasts ADD COLUMN crop VARCHAR(160);

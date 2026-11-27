@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::section})}">
+<body>
+<section class="max-w-6xl mx-auto p-6 space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-2xl font-bold" th:text="#{forum.page.title}">Community Discussion Board</h1>
+        <a th:href="@{/forum/posts/new}"
+           class="px-4 py-2 rounded bg-emerald-600 text-white"
+           th:text="#{forum.action.newPost}">Ask a Question</a>
+    </div>
+
+    <div th:if="${successMessage}"
+         class="p-3 rounded bg-emerald-100 text-emerald-800"
+         th:text="#{${successMessage}}">Saved</div>
+
+    <form th:action="@{/forum}" method="get" class="flex flex-wrap gap-3">
+        <select name="cropId" class="border rounded p-2">
+            <option value="" th:text="#{forum.filter.allCrops}">All Crops</option>
+            <option th:each="c : ${crops}"
+                    th:value="${c.id}"
+                    th:selected="${selectedCropId != null and selectedCropId == c.id}"
+                    th:text="${c.nameEn}">Crop</option>
+        </select>
+        <input type="text"
+               name="q"
+               th:value="${query}"
+               th:placeholder="#{forum.search.placeholder}"
+               class="border rounded p-2 flex-1 min-w-[200px]"/>
+        <button type="submit"
+                class="px-4 py-2 rounded bg-blue-600 text-white"
+                th:text="#{forum.action.filter}">Search</button>
+    </form>
+
+    <div class="space-y-4">
+        <div th:each="p : ${posts}" class="border rounded p-4 space-y-2">
+            <div class="flex items-center justify-between">
+                <a th:href="@{/forum/posts/{id}(id=${p.id})}"
+                   class="text-lg font-semibold text-emerald-700 hover:underline"
+                   th:text="${p.title}">Post Title</a>
+                <span class="text-xs px-2 py-1 rounded bg-gray-100" th:text="${p.status}">OPEN</span>
+            </div>
+            <p class="text-gray-700" th:text="${p.body}">Post summary</p>
+            <div class="text-sm text-gray-500 flex gap-4">
+                <span th:text="${p.author.fullName}">Author</span>
+                <span th:if="${p.cropTag != null}" th:text="${p.cropTag.nameEn}">Crop</span>
+                <span th:text="${#lists.size(p.answers)} + ' ' + #{forum.label.replies}">0 replies</span>
+            </div>
+        </div>
+    </div>
+</section>
+</body>
+</html>
